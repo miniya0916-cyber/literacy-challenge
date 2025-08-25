@@ -36,19 +36,20 @@
 
             <section id="student-info" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                 <div>
-                    <label for="department" class="block font-semibold text-gray-700 mb-1">학과</label>
+                    <label for="department" class="block font-semibold text-gray-700 mb-1">구분</label>
                     <select id="department" name="department" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
-                        <option value="">학과 선택</option>
+                        <option value="">선택</option>
                         <option value="기계과">기계과</option>
                         <option value="전기과">전기과</option>
                         <option value="전자과">전자과</option>
                         <option value="화공과">화공과</option>
                         <option value="디자인과">디자인과</option>
                         <option value="컴퓨터과">컴퓨터과</option>
+                        <option value="교사">교사</option>
                     </select>
                 </div>
                 <div>
-                    <label for="studentId" class="block font-semibold text-gray-700 mb-1">학번</label>
+                    <label id="studentIdLabel" for="studentId" class="block font-semibold text-gray-700 mb-1">학번</label>
                     <input type="text" id="studentId" name="studentId" placeholder="예) 10101" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 </div>
                 <div>
@@ -124,6 +125,22 @@ document.addEventListener('DOMContentLoaded', function() {
             `;
             quizForm.appendChild(quizItem);
         });
+        
+        // --- START: 교사/학생 선택에 따른 UI 변경 로직 추가 ---
+        const departmentSelect = document.getElementById('department');
+        const studentIdLabel = document.getElementById('studentIdLabel');
+        const studentIdInput = document.getElementById('studentId');
+
+        departmentSelect.addEventListener('change', function() {
+            if (this.value === '교사') {
+                studentIdLabel.textContent = '소속/교과';
+                studentIdInput.placeholder = '예) 교무실/국어';
+            } else {
+                studentIdLabel.textContent = '학번';
+                studentIdInput.placeholder = '예) 10101';
+            }
+        });
+        // --- END: 교사/학생 선택에 따른 UI 변경 로직 추가 ---
 
         document.getElementById('submit-btn').addEventListener('click', () => {
             const department = document.getElementById('department').value;
@@ -132,7 +149,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const resultEl = document.getElementById('result');
 
             if (!department || !studentId || !studentName) {
-                resultEl.textContent = '학과, 학번, 이름을 모두 입력해주세요!';
+                resultEl.textContent = '구분, 학번(소속/교과), 이름을 모두 입력해주세요!';
                 resultEl.className = 'text-center text-xl font-bold mt-6 text-red-600';
                 return;
             }
