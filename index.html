@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 문해력 챌린지</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+        }
+        .explanation {
+            background-color: #f3f4f6; /* gray-100 */
+            border-left: 4px solid #3b82f6; /* blue-500 */
+            padding: 12px;
+            margin-top: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen p-4">
+
+    <div class="container w-full max-w-2xl bg-white rounded-2xl shadow-lg p-6 md:p-8">
+        <header class="text-center mb-6">
+            <h1 class="text-2xl md:text-3xl font-bold text-blue-600">📝 오늘의 문해력 챌린지</h1>
+            <p id="date-display" class="text-gray-600 font-semibold mt-2"></p>
+        </header>
+        
+        <main id="test-content">
+            <section id="passage-container" class="bg-blue-50 p-5 rounded-lg mb-6 border border-blue-200">
+                <h2 id="passage-topic" class="text-lg font-bold text-blue-800 mb-2"></h2>
+                <p id="passage" class="text-gray-800 leading-relaxed"></p>
+            </section>
+
+            <section id="student-info" class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                <div>
+                    <label for="department" class="block font-semibold text-gray-700 mb-1">학과</label>
+                    <select id="department" name="department" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <option value="">학과 선택</option>
+                        <option value="기계과">기계과</option>
+                        <option value="전기과">전기과</option>
+                        <option value="전자과">전자과</option>
+                        <option value="화공과">화공과</option>
+                        <option value="디자인과">디자인과</option>
+                        <option value="컴퓨터과">컴퓨터과</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="studentId" class="block font-semibold text-gray-700 mb-1">학번</label>
+                    <input type="text" id="studentId" name="studentId" placeholder="예) 10101" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+                <div>
+                    <label for="studentName" class="block font-semibold text-gray-700 mb-1">이름</label>
+                    <input type="text" id="studentName" name="studentName" placeholder="예) 홍길동" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                </div>
+            </section>
+            
+            <section id="quiz-form">
+                <!-- 퀴즈 문항이 여기에 동적으로 추가됩니다. -->
+            </section>
+            
+            <button id="submit-btn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-bold text-lg hover:bg-blue-700 transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 mt-4">
+                제출 및 정답 확인
+            </button>
+            <p id="result" class="text-center text-xl font-bold mt-6"></p>
+        </main>
+        
+        <div id="no-test-message" class="text-center py-10" style="display:none;">
+            <p class="text-xl font-bold text-gray-700">오늘은 예정된 테스트가 없습니다.</p>
+            <p class="text-gray-500 mt-2">테스트 기간: 2025년 8월 25일 ~ 2025년 12월 19일</p>
+        </div>
+    </div>
+
+<script>
+// -------------------- START: 콘텐츠 입력 영역 --------------------
+// 각 문제에 해설(e)을 추가했습니다.
+const dailyContent = [
+    {
+        date: "2025-08-25",
+        topic: "[기계과] ⚙️ 3D 프린팅 기술의 원리",
+        passage: `3D 프린팅은 '적층 가공' 방식을 사용하여 3차원 물체를 만들어내는 기술입니다. 이는 얇은 층(Layer)을 한 겹씩 순서대로 쌓아 올려 형태를 완성하는 원리입니다. 마치 시루떡을 한 층씩 쌓아 올리는 것과 비슷하다고 생각할 수 있습니다. 기존의 '절삭 가공'이 큰 덩어리를 깎아내며 모양을 만드는 것과는 정반대의 접근법이죠. 이 기술 덕분에 복잡하고 정교한 시제품 제작이 훨씬 빠르고 저렴해졌습니다. 또한, 개인 맞춤형 제품 생산이나 의료 분야의 인공 장기 제작 등 활용 범위가 무궁무진하게 넓어지고 있습니다. 미래 제조업의 혁신을 이끌 핵심 기술로 주목받는 이유입니다.`,
+        questions: [
+            {q: "1. 3D 프린팅의 핵심 원리인 '적층 가공'은 무엇을 쌓아 올리는 방식인가요?", a: "얇은 층", e: "본문의 두 번째 줄에서 '얇은 층(Layer)을 한 겹씩 순서대로 쌓아 올려'라고 설명하고 있습니다."},
+            {q: "2. 글에서 3D 프린팅과 반대되는 개념으로 설명된 가공 방식은 무엇인가요?", a: "절삭 가공", e: "본문의 네 번째 줄에서 '기존의 절삭 가공이 큰 덩어리를 깎아내며 모양을 만드는 것과는 정반대'라고 명시되어 있습니다."},
+            {q: "3. 이 기술 덕분에 무엇을 만드는 과정이 더 빠르고 저렴해졌나요?", a: "시제품", e: "다섯 번째 줄에 '복잡하고 정교한 시제품 제작이 훨씬 빠르고 저렴해졌다'고 나와 있습니다."},
+            {q: "4. 본문에 언급된 3D 프린팅의 활용 분야 두 가지는 무엇인가요?", a: "개인 맞춤형 제품 생산, 의료 분야", e: "여섯 번째 줄에서 '개인 맞춤형 제품 생산이나 의료 분야의 인공 장기 제작'을 활용 범위의 예시로 들고 있습니다."},
+            {q: "5. 이 글의 주제로 가장 적절한 것은 무엇일까요?", a: "3D 프린팅의 원리와 활용", e: "글 전체가 3D 프린팅의 '적층 가공' 원리를 설명하고, 시제품 제작 및 의료 분야 등 '활용' 사례를 다루고 있습니다."}
+        ]
+    },
+    // ... 다른 날짜의 콘텐츠에도 모두 'e' (해설) 항목을 추가해야 합니다.
+];
+// -------------------- END: 콘텐츠 입력 영역 --------------------
+
+// -------------------- START: 구글 시트 연동 설정 --------------------
+// 아래 주소는 2단계에서 생성한 본인의 웹 앱 URL로 반드시 교체해야 합니다.
+const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzerSRbKxZ3U3S8YhVO32sIpeqYojyuIz9x6dVFz0BDJ_EYMWx2KnIR71BSEnPmmSps/exec';
+// -------------------- END: 구글 시트 연동 설정 --------------------
+
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const formattedDate = `${year}-${month}-${day}`;
+
+    document.getElementById('date-display').textContent = `${year}년 ${today.getMonth() + 1}월 ${today.getDate()}일`;
+
+    const content = dailyContent.find(item => item.date === formattedDate);
+
+    if (content) {
+        document.getElementById('passage-topic').textContent = content.topic;
+        document.getElementById('passage').textContent = content.passage;
+        
+        const quizForm = document.getElementById('quiz-form');
+        content.questions.forEach((q, index) => {
+            const quizItem = document.createElement('div');
+            quizItem.classList.add('quiz-item', 'mb-4');
+            quizItem.innerHTML = `
+                <label for="q${index}" class="block font-semibold text-gray-700 mb-1">${q.q}</label>
+                <input type="text" id="q${index}" name="q${index}" class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <div id="exp${index}" class="explanation" style="display:none;"></div>
+            `;
+            quizForm.appendChild(quizItem);
+        });
+
+        document.getElementById('submit-btn').addEventListener('click', () => {
+            const department = document.getElementById('department').value;
+            const studentId = document.getElementById('studentId').value.trim();
+            const studentName = document.getElementById('studentName').value.trim();
+            const resultEl = document.getElementById('result');
+
+            if (!department || !studentId || !studentName) {
+                resultEl.textContent = '학과, 학번, 이름을 모두 입력해주세요!';
+                resultEl.className = 'text-center text-xl font-bold mt-6 text-red-600';
+                return;
+            }
+
+            let score = 0;
+            let allAnswered = true;
+            const userAnswers = [];
+
+            content.questions.forEach((q, index) => {
+                const inputElement = document.getElementById(`q${index}`);
+                const userAnswer = inputElement.value.trim();
+                userAnswers.push(userAnswer);
+                if (userAnswer === '') allAnswered = false;
+            });
+
+            if (!allAnswered) {
+                resultEl.textContent = '모든 문제에 답을 입력해주세요!';
+                resultEl.className = 'text-center text-xl font-bold mt-6 text-red-600';
+                return;
+            }
+            
+            // 데이터 제출 로직
+            const submissionData = {
+                timestamp: new Date().toLocaleString("ko-KR"),
+                department,
+                studentId,
+                studentName,
+                testDate: formattedDate,
+                topic: content.topic,
+                answers: JSON.stringify(userAnswers) // 배열을 JSON 문자열로 변환
+            };
+
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors', // CORS 에러 방지를 위해 no-cors 모드 사용
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(submissionData)
+            }).catch(err => console.error("Error submitting data:", err));
+
+
+            // 정답 확인 및 해설 표시
+            content.questions.forEach((q, index) => {
+                const inputElement = document.getElementById(`q${index}`);
+                const userAnswer = userAnswers[index];
+                const formattedUserAnswer = userAnswer.replace(/\s+/g, '').toLowerCase();
+                const formattedCorrectAnswer = q.a.replace(/\s+/g, '').toLowerCase();
+                const explanationEl = document.getElementById(`exp${index}`);
+
+                if (formattedUserAnswer === formattedCorrectAnswer) {
+                    score++;
+                    inputElement.style.borderColor = '#10B981'; // Green-500
+                } else {
+                    inputElement.style.borderColor = '#EF4444'; // Red-500
+                }
+                
+                explanationEl.innerHTML = `<strong>정답:</strong> ${q.a}<br><strong>해설:</strong> ${q.e}`;
+                explanationEl.style.display = 'block';
+                inputElement.disabled = true; // 수정 불가
+            });
+
+            submissionData.score = `${score}/${content.questions.length}`; // 점수 추가
+            // 점수 포함하여 다시 전송 (실제로는 한 번에 보내는 것이 더 효율적)
+            fetch(GOOGLE_SCRIPT_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(submissionData)
+            });
+
+            resultEl.textContent = `제출 완료! 결과: ${content.questions.length}문제 중 ${score}문제를 맞혔습니다! 🎉`;
+            resultEl.className = 'text-center text-xl font-bold mt-6 text-green-600';
+            document.getElementById('submit-btn').disabled = true;
+            document.getElementById('submit-btn').textContent = '제출이 완료되었습니다';
+            document.getElementById('submit-btn').classList.remove('bg-blue-600', 'hover:bg-blue-700');
+            document.getElementById('submit-btn').classList.add('bg-gray-400', 'cursor-not-allowed');
+        });
+
+    } else {
+        document.getElementById('test-content').style.display = 'none';
+        document.getElementById('no-test-message').style.display = 'block';
+    }
+});
+</script>
+
+</body>
+</html>
