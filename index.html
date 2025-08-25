@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>오늘의 문해력 챌린지</title>
-    <script src="[https://cdn.tailwindcss.com](https://cdn.tailwindcss.com)"></script>
-    <link href="[https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap](https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap)" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Noto Sans KR', sans-serif;
@@ -406,7 +406,7 @@ const dailyContent = [
 
 // -------------------- START: 구글 시트 연동 설정 --------------------
 // 아래 주소는 2단계에서 생성한 본인의 웹 앱 URL로 반드시 교체해야 합니다.
-const GOOGLE_SCRIPT_URL = '[https://script.google.com/macros/s/AKfycbzerSRbKxZ3U3S8YhVO32sIpeqYojyuIz9x6dVFz0BDJ_EYMWx2KnIR71BSEnPmmSps/exec](https://script.google.com/macros/s/AKfycbzerSRbKxZ3U3S8YhVO32sIpeqYojyuIz9x6dVFz0BDJ_EYMWx2KnIR71BSEnPmmSps/exec)';
+const GOOGLE_SCRIPT_URL = '여기에_배포된_웹_앱_URL을_붙여넣으세요'; // 이 주소는 그대로 유지
 // -------------------- END: 구글 시트 연동 설정 --------------------
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -481,27 +481,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
             
-            // 데이터 제출 로직
-            const submissionData = {
-                timestamp: new Date().toLocaleString("ko-KR"),
-                department,
-                studentId,
-                studentName,
-                testDate: formattedDate,
-                topic: content.topic,
-                answers: JSON.stringify(userAnswers) // 배열을 JSON 문자열로 변환
-            };
-
-            fetch(GOOGLE_SCRIPT_URL, {
-                method: 'POST',
-                mode: 'no-cors', // CORS 에러 방지를 위해 no-cors 모드 사용
-                cache: 'no-cache',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(submissionData)
-            }).catch(err => console.error("Error submitting data:", err));
-
-
-            // 정답 확인 및 해설 표시
+            // 정답 확인 및 해설 표시 (데이터 제출 전 실행)
             content.questions.forEach((q, index) => {
                 const inputElement = document.getElementById(`q${index}`);
                 const userAnswer = userAnswers[index];
@@ -518,18 +498,28 @@ document.addEventListener('DOMContentLoaded', function() {
                 
                 explanationEl.innerHTML = `<strong>정답:</strong> ${q.a}<br><strong>해설:</strong> ${q.e}`;
                 explanationEl.style.display = 'block';
-                inputElement.disabled = true; // 수정 불가
+                inputElement.disabled = true;
             });
 
-            submissionData.score = `${score}/${content.questions.length}`; // 점수 추가
-            // 점수 포함하여 다시 전송 (실제로는 한 번에 보내는 것이 더 효율적)
+            // 점수까지 계산한 최종 데이터를 한 번만 제출
+            const submissionData = {
+                timestamp: new Date().toLocaleString("ko-KR"),
+                department,
+                studentId,
+                studentName,
+                testDate: formattedDate,
+                topic: content.topic,
+                answers: JSON.stringify(userAnswers),
+                score: `${score}/${content.questions.length}`
+            };
+
             fetch(GOOGLE_SCRIPT_URL, {
                 method: 'POST',
                 mode: 'no-cors',
                 cache: 'no-cache',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(submissionData)
-            });
+            }).catch(err => console.error("Error submitting data:", err));
 
             resultEl.textContent = `제출 완료! 결과: ${content.questions.length}문제 중 ${score}문제를 맞혔습니다! 🎉`;
             resultEl.className = 'text-center text-xl font-bold mt-6 text-green-600';
@@ -538,7 +528,7 @@ document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('submit-btn').classList.remove('bg-blue-600', 'hover:bg-blue-700');
             document.getElementById('submit-btn').classList.add('bg-gray-400', 'cursor-not-allowed');
         });
-
+    
     } else {
         document.getElementById('test-content').style.display = 'none';
         document.getElementById('no-test-message').style.display = 'block';
